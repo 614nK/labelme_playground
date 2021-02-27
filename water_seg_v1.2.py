@@ -4,6 +4,7 @@ import numpy as np
 import time
 import pandas as pd # CHANGED:
 from imutils.video import count_frames
+import os
 
 # Declaration of which video file is being fed in
 ship = 'meters_001'
@@ -38,7 +39,7 @@ def area_filter(contours):
 
 # filters out erroneous lines
 def line_filter(ly,ry):
-    # QUESTION: Not really understanding the usage of nested functions @learn
+
     def _line_filter(box):
         # takes boundingRect output shown below
         x,y,w,h = box
@@ -63,11 +64,16 @@ def box_center(box):
     x,y,w,h = box
     return x + w//2, y + h//2
 
+def get_points(box):
+    x,y,w,h = box
+    return x, y, x + w, y + h
+
 #draws boxes on the frame around draft marks
 def draw_box(frame):
     def _draw(box):
         x,y,w,h = box
         cv2.rectangle(frame, (x,y), (x + w, y + h), (0, 255, 0), 2)
+
         return box
     return _draw
 
@@ -94,7 +100,9 @@ def find_white_marks(frame):
     # function and outputs the map_object to boxes
     boxes = map(cv2.boundingRect, area_filter(contours))
     # returns boxes and thresholded/operated image
-    return boxes, im
+    #CHANGED: returning contours as well
+    #TODO: save contours into some sort of dictionary or array or something to examine it and how to incorporate into labelme
+    return boxes, im, contours
 
 # filters out center points that do not fall within a range
 def remove_outliers(centers):
@@ -298,7 +306,8 @@ while(ret):
         # copy frame
         _frame = frame.copy()
       
-        boxes, im = find_white_marks(frame)
+        boxes, im, contours = find_white_marks(frame)
+
         # calculate dense optical flow
         flow = cv2.calcOpticalFlowFarneback(old_im,im, 
             None, 0.5, 3, 15, 3, 5, 1.2, 0)
@@ -315,11 +324,19 @@ while(ret):
         # flowim = cv2.cvtColor(hsv,cv2.COLOR_HSV2BGR)
         
         # draws boxes around draft markings (following filtering)
+        # CHANGED: This section here allows for the saving of the filtered boxes for import into a JSON file @labelme @JSON
+        boxes_for_labelme = map(cv2.boundingRect, area_filter(contours))
+        boxes_for_labelme = list(map(draw_box(frame), filter(line_filter(lefty,righty), 
+            boxes_for_labelme)))
+        #TODO: build little function to call that will change these into the actual four points that we want vice, just the values
+        print(boxes_for_labelme)
+
         boxes = map(draw_box(frame), filter(line_filter(lefty,righty), 
             boxes))
 
         # finds the vertical line that bisects draft marks
         topx, botx = find_draft_vert(boxes, topx, botx)
+
         # send line through kahlman filter
         d_k.correct(np.array([topx, botx, tfvx,bfvx], np.float32))
         prediction = d_k.predict()
@@ -355,8 +372,8 @@ while(ret):
             #cv2.circle(frame, (int(xm),int(ym)), 14, (0, 255, 0), 10) # CHANGED: Commented out larger circle
             # print(xm, ym)
             # fill x and y draft point arrays
-            x_draft_points[it] = int(xm)
-            y_draft_points[it] = int(ym)
+            #x_draft_points[it] = int(xm)
+            #y_draft_points[it] = int(ym)
             # print(x_draft_points, y_draft_points)
         else:
             # create red box around frame indicating not sure
@@ -365,27 +382,27 @@ while(ret):
         # add point indicating where draft is
         # CHANGED: added in this whole section to produce the average draft position per second (it updates every 30 frames)
         if it < 1043:
-            print("n =", n)
+            #print("n =", n)
             if it == 0:
                 #print(data[0, :])
                 cv2.circle(frame, (avg_draft_location[0,1], avg_draft_location[0,2]), 2, (0, 0, 0), 2)
-                print("Loop 1: it == 0")
-                print(avg_draft_location[0,1], avg_draft_location[0,2])
+                #print("Loop 1: it == 0")
+                #print(avg_draft_location[0,1], avg_draft_location[0,2])
             elif n > 32:
                 #print(data[33, :])
                 cv2.circle(frame, (avg_draft_location[33,1], avg_draft_location[33,2]), 2, (0, 0, 0), 2)
-                print("Loop 2: n > 32")
-                print(avg_draft_location[33,1], avg_draft_location[33,2])
+                #print("Loop 2: n > 32")
+                #print(avg_draft_location[33,1], avg_draft_location[33,2])
             elif it % 30 != 0:
                 #print(data[n, :])
                 cv2.circle(frame, (avg_draft_location[n,1], avg_draft_location[n,2]), 2, (0, 0, 0), 2)
-                print("Loop 3: % 30 != 0")
-                print(avg_draft_location[n,1], avg_draft_location[n,2])
+                #print("Loop 3: % 30 != 0")
+                #print(avg_draft_location[n,1], avg_draft_location[n,2])
             else:
                 n+=1
                 #print(data[n, :])
                 cv2.circle(frame, (avg_draft_location[n,1], avg_draft_location[n,2]), 2, (0, 0, 0), 2)
-                print("Loop 4: % 30 == 0")
+                #print("Loop 4: % 30 == 0")
 
         # show the images
         # cv2.imshow("Draft Marks Estimate", np.concatenate([frame, flowim],1))
@@ -394,17 +411,19 @@ while(ret):
         # Following line overlays transparent rectangle over the image
         frame = cv2.addWeighted(_frame, alpha, frame, 1 - alpha, 0)
         cv2.imshow(controlwindow, frame)
+        #TODO write frame to jpg
+        labelme_path = '/Users/blank/AutoDraft/imagery/labelme_playground/meters_001_output'
+        cv2.imwrite(os.path.join(labelme_path, f'frame_{it}_{ship}.jpg'), frame)
         it+=1
-        print(it)
+        #print(it)
     if save:
         out.write(frame)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(0) & 0xFF == ord('q'):
         break
 # find average pixel location of draft
-# FIXME: Average is resulting in a huge number every so often in the x point
-# FIXME: Also, the average steadily drifts away from the point of intersection as the video goes on. @investigate
-x_y_points = np.column_stack(x_draft_points, y_draft_points)
-np.savetxt("AutoDraft_draft_points.csv", x_y_points, delimiter=",")
+
+#x_y_points = np.column_stack(x_draft_points, y_draft_points)
+#np.savetxt("AutoDraft_draft_points.csv", x_y_points, delimiter=",")
 #average_x_draft_point = int(np.mean(x_draft_points))
 #average_y_draft_point = int(np.mean(y_draft_points))
 #print(x_draft_points, y_draft_points)
