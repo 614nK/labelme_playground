@@ -4,7 +4,8 @@ import numpy as np
 import time
 import pandas as pd # CHANGED:
 from imutils.video import count_frames
-import os
+import os.path as osp
+import labelme_compatibility as lc
 
 # Declaration of which video file is being fed in
 ship = 'meters_001'
@@ -305,6 +306,9 @@ while(ret):
     if frame is not None:
         # copy frame
         _frame = frame.copy()
+        #CHANGED: write frame to jpg for labelme use
+        labelme_image_path = f'/Users/blank/AutoDraft/imagery/labelme_playground/{ship}_output/frame_{it}_{ship}.jpg'
+        cv2.imwrite(osp.join(f'/Users/blank/AutoDraft/imagery/labelme_playground/{ship}_output', f'frame_{it}_{ship}.jpg'), frame)
       
         boxes, im, contours = find_white_marks(frame)
 
@@ -326,10 +330,12 @@ while(ret):
         # draws boxes around draft markings (following filtering)
         # CHANGED: This section here allows for the saving of the filtered boxes for import into a JSON file @labelme @JSON
         boxes_for_labelme = map(cv2.boundingRect, area_filter(contours))
-        boxes_for_labelme = list(map(draw_box(frame), filter(line_filter(lefty,righty), 
-            boxes_for_labelme)))
-        #TODO: build little function to call that will change these into the actual four points that we want vice, just the values
-        print(boxes_for_labelme)
+        boxes_for_labelme = np.array(list(map(draw_box(frame), filter(line_filter(lefty,righty), 
+            boxes_for_labelme))))
+        points, shapes = lc.extract_points(boxes_for_labelme)
+        init = lc.LabelFile(labelme_image_path, shapes)
+        init.save(init.filename, init.shapes, init.imagePath, init.imageData)
+        
 
         boxes = map(draw_box(frame), filter(line_filter(lefty,righty), 
             boxes))
@@ -411,14 +417,11 @@ while(ret):
         # Following line overlays transparent rectangle over the image
         frame = cv2.addWeighted(_frame, alpha, frame, 1 - alpha, 0)
         cv2.imshow(controlwindow, frame)
-        #TODO write frame to jpg
-        labelme_path = '/Users/blank/AutoDraft/imagery/labelme_playground/meters_001_output'
-        cv2.imwrite(os.path.join(labelme_path, f'frame_{it}_{ship}.jpg'), frame)
         it+=1
         #print(it)
     if save:
         out.write(frame)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(0) & 0xFF == ord('q'):
         break
 # find average pixel location of draft
 
