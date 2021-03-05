@@ -1,0 +1,252 @@
+[
+  {
+    "label": "draftmarks",
+    "points": [
+      [
+        219.0,
+        182.0
+      ],
+      [
+        219.0,
+        199.0
+      ],
+      [
+        221.0,
+        182.0
+      ],
+      [
+        221.0,
+        199.0
+      ]
+    ],
+    "shape_type": "polygon",
+    "flags": {},
+    "group_id": null,
+    "other_data": null
+  },
+  {
+    "label": "draftmarks",
+    "points": [
+      [
+        232.0,
+        173.0
+      ],
+      [
+        232.0,
+        185.0
+      ],
+      [
+        240.0,
+        173.0
+      ],
+      [
+        240.0,
+        185.0
+      ]
+    ],
+    "shape_type": "polygon",
+    "flags": {},
+    "group_id": null,
+    "other_data": null
+  },
+  {
+    "label": "draftmarks",
+    "points": [
+      [
+        232.0,
+        153.0
+      ],
+      [
+        232.0,
+        164.0
+      ],
+      [
+        239.0,
+        153.0
+      ],
+      [
+        239.0,
+        164.0
+      ]
+    ],
+    "shape_type": "polygon",
+    "flags": {},
+    "group_id": null,
+    "other_data": null
+  },
+  {
+    "label": "draftmarks",
+    "points": [
+      [
+        231.0,
+        132.0
+      ],
+      [
+        231.0,
+        142.0
+      ],
+      [
+        237.0,
+        132.0
+      ],
+      [
+        237.0,
+        142.0
+      ]
+    ],
+    "shape_type": "polygon",
+    "flags": {},
+    "group_id": null,
+    "other_data": null
+  },
+  {
+    "label": "draftmarks",
+    "points": [
+      [
+        230.0,
+        111.0
+      ],
+      [
+        230.0,
+        123.0
+      ],
+      [
+        237.0,
+        111.0
+      ],
+      [
+        237.0,
+        123.0
+      ]
+    ],
+    "shape_type": "polygon",
+    "flags": {},
+    "group_id": null,
+    "other_data": null
+  },
+  {
+    "label": "draftmarks",
+    "points": [
+      [
+        230.0,
+        92.0
+      ],
+      [
+        230.0,
+        101.0
+      ],
+      [
+        239.0,
+        92.0
+      ],
+      [
+        239.0,
+        101.0
+      ]
+    ],
+    "shape_type": "polygon",
+    "flags": {},
+    "group_id": null,
+    "other_data": null
+  },
+  {
+    "label": "draftmarks",
+    "points": [
+      [
+        216.0,
+        79.0
+      ],
+      [
+        216.0,
+        101.0
+      ],
+      [
+        229.0,
+        79.0
+      ],
+      [
+        229.0,
+        101.0
+      ]
+    ],
+    "shape_type": "polygon",
+    "flags": {},
+    "group_id": null,
+    "other_data": null
+  },
+  {
+    "label": "draftmarks",
+    "points": [
+      [
+        208.0,
+        78.0
+      ],
+      [
+        208.0,
+        99.0
+      ],
+      [
+        214.0,
+        78.0
+      ],
+      [
+        214.0,
+        99.0
+      ]
+    ],
+    "shape_type": "polygon",
+    "flags": {},
+    "group_id": null,
+    "other_data": null
+  },
+  {
+    "label": "draftmarks",
+    "points": [
+      [
+        229.0,
+        72.0
+      ],
+      [
+        229.0,
+        83.0
+      ],
+      [
+        236.0,
+        72.0
+      ],
+      [
+        236.0,
+        83.0
+      ]
+    ],
+    "shape_type": "polygon",
+    "flags": {},
+    "group_id": null,
+    "other_data": null
+  },
+  {
+    "label": "draftmarks",
+    "points": [
+      [
+        229.0,
+        53.0
+      ],
+      [
+        229.0,
+        63.0
+      ],
+      [
+        236.0,
+        53.0
+      ],
+      [
+        236.0,
+        63.0
+      ]
+    ],
+    "shape_type": "polygon",
+    "flags": {},
+    "group_id": null,
+    "other_data": null
+  }
+]

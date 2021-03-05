@@ -130,3 +130,4 @@ class LabelFile:
             #self.filename = filename
         except Exception as e:
             raise LabelFileError(e)
+            
